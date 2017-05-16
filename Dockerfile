@@ -1,4 +1,4 @@
-FROM jestrr/mods:0.1
+FROM jestrr/mods:no-java
 
 WORKDIR /home/app
 ADD . /home/app

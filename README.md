@@ -18,3 +18,6 @@ Check `HOST` under `HOST:CONTAINER` in `docker-compose.yml` for port (default 50
 
 ### Source
 A link to this project to clone can be found on **[<u>Bitbucket</u>](https://bitbucket.org/JestrJ/react-template)**.
+A link to the pre-built docker container can be found on **[<u>DockerHub</u>](https://hub.docker.com/r/jestrr/react-template/)**.
+
+The container itself is rather useless, but illustrates how easy it is to get up and running.  
