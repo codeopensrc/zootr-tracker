@@ -2,7 +2,7 @@ version: "3"
 services:
     main:
         build: .
-        image: YOUR_DOCKER_REGISTRY/react
+        image: YOUR_DOCKER_REGISTRY/react:0.1.0
         entrypoint: ["pm2", "start", "/home/app/src/config/pm2.config.js", "--no-daemon"]
         volumes:
             - ./src:/home/app/src
@@ -23,3 +23,9 @@ services:
             PUB_FILES: ./pub/
             BIN: ./server/bin/
             OUTPUT_FILES: ./server/output/
+
+            # Consul
+            SERVICE_NAME: react
+            SERVICE_PORT: 5000
+            REGISTER_SERVICE: "false"
+            IMAGE_VER: 0.1.0
