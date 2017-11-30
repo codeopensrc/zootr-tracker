@@ -2,6 +2,14 @@
 
 import React from 'react';
 import DOM from 'react-dom';
+import {
+    BrowserRouter as Router,
+    Route,
+    Switch,
+    Link
+} from 'react-router-dom';
+
+import Home from "./Home.jsx"
 
 require("../style/Entry.less")
 
@@ -20,9 +28,15 @@ class Entry extends React.Component {
     render() {
 
         return (
-            <div>
-                HI
-            </div>
+            <Router>
+                <div id={"component-entry"}>
+                    <div id={"component-header"}>
+                        <Link to={"/home"} className={"headerButton"}>Home</Link>
+                    </div>
+
+                    <Route path={"/home"} component={Home} />
+                </div>
+            </Router>
         );
     }
 

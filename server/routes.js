@@ -1,5 +1,7 @@
 'use strict';
 
+const url = require("url");
+
 const routes = function (req, res) {
 
     const respond = (response) => {
@@ -16,7 +18,10 @@ const routes = function (req, res) {
     req.on('end', () => {
         let parsed = input ? JSON.parse(input) : "";
 
-        switch(req.url) {
+        let requrl = url.parse(req.url).pathname
+        let headers = req.headers;
+
+        switch(requrl) {
             case "/": respond();
             break;
             default: respond();
