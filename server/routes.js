@@ -2,6 +2,8 @@
 
 const url = require("url");
 
+const auth = require("./auth.js");
+
 const routes = function (req, res) {
 
     const respond = (response) => {
@@ -24,10 +26,27 @@ const routes = function (req, res) {
         switch(requrl) {
             case "/": respond();
             break;
+            case "/api/post/logout": sendLogout(headers, respond) //username / key
+            break;
             default: respond();
         }
     })
 
+}
+
+function sendLogout(headers, respond) {
+    auth.logout({headers})
+    .then(({ status }) => {
+        if(!status) {
+            console.log("User has incorrect authentication credentials");
+            return respond({status: false, data: "Incorrect credentials"})
+        }
+        respond({status: true, data: "Success"})
+    })
+    .catch((e) => {
+        console.log("Bad:", e);
+        respond({status: false, data: "Server error"})
+    })
 }
 
 module.exports = routes;

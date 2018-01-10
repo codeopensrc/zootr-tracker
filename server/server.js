@@ -8,7 +8,6 @@ const path = require("path");
 
 const routes = require("./routes.js");
 const service = require("./service.js");
-const auth = require("./auth.js");
 
 const PUB_FILES = process.env.PUB_FILES;
 const OUTPUT_FILES = process.env.OUTPUT_FILES;

@@ -7,16 +7,17 @@ const getCookie = (name) => {
     }, '')
 }
 
-function defaultMessage(type, err) {
+function defaultMessage(path, err) {
     alert("Unfortunately your request could not be processed. If this issue happens"+
-    " again, please contact your administrator providing the following info: \n\n"+`${type} \n ${err}` )
+    " again, please contact your administrator providing the following info: \n\n"+`${path} \n ${err}` )
 }
 
 const api = {
 
-    get: function (type, opts, callback) {
+    get: function (path, opts, callback) {
         if(typeof(opts) === "function") { callback = opts; opts = {} }
-        opts.type = type
+        if(path.charAt(0) !== "/") { path = `/${path}`; }
+
         let returnAs = opts.returnAs || "json"
 
         let request = {
@@ -26,18 +27,21 @@ const api = {
                 "Auth-Key": getCookie("Auth-Key"),
             }
         }
-        fetch(`${HOST}/api/get`+type, request)
+        fetch(`${HOST}/api/get`+path, request)
         .then((r) => {
             if(returnAs === "string") { return r.text() }
             if(returnAs === "json") { return r.json() }
             return r.json()
         })
         .then(callback)
-        .catch((err) => { defaultMessage(type, err) })
+        .catch((err) => { defaultMessage(path, err) })
     },
 
-    post: function (type, opts, callback) {
-        opts.type = type
+    post: function (path, opts, callback) {
+        if(typeof(opts) === "function") { callback = opts; opts = {} }
+        if(path.charAt(0) !== "/") { path = `/${path}`; }
+
+        opts.path = path
         let request = {
             method: "POST",
             body: JSON.stringify(opts),
@@ -46,14 +50,17 @@ const api = {
                 "Auth-Key": getCookie("Auth-Key"),
             }
         }
-        fetch(`${HOST}/api/post`+type, request)
+        fetch(`${HOST}/api/post`+path, request)
         .then((r) => r.json())
         .then(callback)
-        .catch((err) => { defaultMessage(type, err) })
+        .catch((err) => { defaultMessage(path, err) })
     },
 
-    put: function (type, opts, callback) {
-        opts.type = type
+    put: function (path, opts, callback) {
+        if(typeof(opts) === "function") { callback = opts; opts = {} }
+        if(path.charAt(0) !== "/") { path = `/${path}`; }
+
+        opts.path = path
         let request = {
             method: "PUT",
             body: JSON.stringify(opts),
@@ -62,10 +69,10 @@ const api = {
                 "Auth-Key": getCookie("Auth-Key"),
             }
         }
-        fetch(`${HOST}/api/put`+type, request)
+        fetch(`${HOST}/api/put`+path, request)
         .then((r) => r.json())
         .then(callback)
-        .catch((err) => { defaultMessage(type, err) })
+        .catch((err) => { defaultMessage(path, err) })
     },
 
 }

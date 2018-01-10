@@ -11,3 +11,4 @@ ADD src /home/app/src
 RUN npm run release
 
 ADD server /home/app/server
+ADD docker-compose.yml /home/app/docker-compose.yml
