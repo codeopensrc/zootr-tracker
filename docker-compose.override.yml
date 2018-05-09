@@ -4,7 +4,7 @@ services:
         build:
             context: .
             target: src
-        image: jestrr/react:0.1.0
+        image: jestrr/react:dev
         entrypoint: ["pm2-dev", "server/pm2.config.js"]
         volumes:
             - ./src:/home/app/src

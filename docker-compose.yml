@@ -4,7 +4,7 @@ services:
         build:
             context: .
             target: prod
-        image: jestrr/react:0.1.0
+        image: jestrr/react:0.2.0
         ports:
             - "5000:80"
         deploy:
