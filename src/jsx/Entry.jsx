@@ -10,6 +10,7 @@ import {
 } from 'react-router-dom';
 
 import Home from "./Home.jsx"
+import { Menu } from "os-npm-util";
 
 require("../style/Entry.less")
 
@@ -30,6 +31,7 @@ class Entry extends React.Component {
         return (
             <Router>
                 <div id={"component-entry"}>
+                    <Menu />
                     <div id={"component-header"}>
                         <Link to={"/home"} className={"headerButton"}>Home</Link>
                     </div>
