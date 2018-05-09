@@ -13,7 +13,7 @@ services:
                 parallelism: 1
                 delay: 10s
                 failure_action: rollback
-                max_failure_ratio: 1
+                max_failure_ratio: .3
                 order: start-first
             restart_policy:
                 max_attempts: 3
