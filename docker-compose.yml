@@ -1,39 +1,24 @@
-version: "3"
+version: "3.5"
 services:
     main:
-        build: .
-        image: YOUR_DOCKER_REGISTRY/react:0.1.0
-        entrypoint: ["pm2", "start", "/home/app/src/config/pm2.config.js", "--no-daemon"]
-        volumes:
-            # - /etc/ssl/creds:/home/app/creds
-            # - /etc/domain:/home/app/domain
-            - ./src:/home/app/src
-            - ./server:/home/app/server
-            # - ./pub:/home/app/pub
-        extra_hosts:
-            localmachine: "172.17.0.1"
+        build:
+            context: .
+            target: prod
+        image: jestrr/react:0.1.0
+        ports:
+            - "5000:80"
         deploy:
             replicas: 1
             update_config:
                 parallelism: 1
                 delay: 10s
+                failure_action: rollback
+                max_failure_ratio: 1
+                order: start-first
             restart_policy:
                 max_attempts: 3
                 condition: on-failure
-        ports:
-            # HOST:CONTAINER
-            # - "172.17.0.1:5000:4000"      # Swarm dev
-            - "5000:4000"                 # Prod
-        labels:
-            com.consul.service: react
-        environment:
-            # Consul
-            REGISTER_SERVICE: "false"
-            # Server
-            PUB_FILES: ./pub/
-            BIN: ./server/bin/
-            OUTPUT_FILES: ./server/output/
-            USE_AUTH: "false"
-            # Database
-            USE_DEV_DB_URL: "true"
-            DEV_DATABASE_URL: mongodb://172.17.0.1:27017/mymongo
+            placement:
+                preferences:
+                    - spread: node.labels.dc
+                    - spread: node.labels.az
