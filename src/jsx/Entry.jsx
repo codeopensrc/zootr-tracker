@@ -10,6 +10,7 @@ import {
 } from 'react-router-dom';
 
 import Home from "./Home.jsx"
+import About from "./About.jsx"
 import { Menu } from "os-npm-util";
 import { ErrorHandler } from "os-npm-util";
 
@@ -23,9 +24,8 @@ class Entry extends React.Component {
     }
 
     componentDidMount() {
-
+        //When component successfully loads
     }
-
 
     render() {
 
@@ -35,10 +35,15 @@ class Entry extends React.Component {
                     <Menu />
                     <ErrorHandler />
                     <div id={"component-header"}>
-                        <Link to={"/home"} className={"headerButton"}>Home</Link>
+                        <Link to={"/"} className={"headerButton"}>Home</Link>
+                        <Link to={"/about"} className={"headerButton"}>About</Link>
                     </div>
 
-                    <Route path={"/home"} component={Home} />
+                    <Switch>
+                        <Route exact path={"/"} component={Home} />
+                        <Route path={"/about"} component={About} />
+                    </Switch>
+
                 </div>
             </Router>
         );

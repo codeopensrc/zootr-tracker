@@ -4,9 +4,9 @@ import React from 'react';
 import DOM from 'react-dom';
 import { api } from "os-npm-util";
 
-// require("../style/Home.less")
+// require("../style/About.less")
 
-class Home extends React.Component {
+class About extends React.Component {
 
     constructor(props) {
         super(props)
@@ -33,16 +33,12 @@ class Home extends React.Component {
 
         return (
             <div>
-                <h3>Home</h3>
-                Congratulations! This is the default "Home.jsx" landing page.
-                <br />
-                This is the page/component that loads when no other URL path is specified.
-                <br />
-                Click the "About" navigation button to head to the example "About.jsx" Page.
+                <h3>About</h3>
+                Congratulations! This is the example "About.jsx" page at "/about".
             </div>
         );
     }
 
 }
 
-module.exports = Home
+module.exports = About

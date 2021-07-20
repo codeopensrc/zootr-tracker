@@ -4,12 +4,13 @@ services:
         build:
             context: .
             target: src
-        image: jestrr/react:dev
+        image: registry.codeopensrc.com/os/react:dev
         entrypoint: ["pm2-dev", "server/pm2.config.js"]
         volumes:
-            - ./src:/home/app/src
-            - ./server:/home/app/server
-            - ./docker-compose.override.yml:/home/app/docker-compose.yml
+            - "${FOLDER_LOCATION:-.}/pub:/home/app/pub"
+            - "${FOLDER_LOCATION:-.}/src:/home/app/src"
+            - "${FOLDER_LOCATION:-.}/server:/home/app/server"
+            - "${FOLDER_LOCATION:-.}/docker-compose.override.yml:/home/app/docker-compose.yml"
         ports:
             - "5005:80"
         labels:
@@ -35,7 +36,7 @@ services:
             timeout: 2s
             start_period: 5s
         environment:
-            DEV_DATABASE_URL: "mongodb://172.17.0.1:27017/mymongo"
+            DEV_DATABASE_URL:       "mongodb://172.17.0.1:27017/mymongo"
             USE_CONSUL_DB:          "false"
             REGISTER_SERVICE:       "false"
             USE_AUTH:               "false"

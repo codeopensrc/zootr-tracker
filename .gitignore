@@ -4,5 +4,10 @@ logs
 dumps
 
 app.bundle.js
+index.html
 npm-debug.log
 .DS_Store
+*.swp
+
+ignore/*
+.env

@@ -18,8 +18,8 @@ process.argv.indexOf("--optimize-minimize") > -1
 
 module.exports = [{
     watchOptions: {
-        poll: 1000,
-        aggregateTimeout: 600,
+        poll: 500,
+        aggregateTimeout: 400,
     },
     entry: {
         app: [ "./src/config/globals.js", "./src/config/polyfills.js", "./src/jsx/Entry.jsx"]
