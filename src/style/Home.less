@@ -1,0 +1,74 @@
+#component-home {
+    display: flex;
+    flex-direction: column;
+
+    > div { margin: 0 10px; text-align: center; }
+
+    .medalRow {
+        margin: 0 4px;
+
+        .medalName {}
+        .medalZone {
+            font-size: 12px;
+        }
+    }
+
+    .zoneLists {
+        width: 45%;
+
+        > div {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+
+            .selectBox {
+                margin: 5px;
+               .zone { background: white; }
+            }
+        }
+    }
+
+    .col {
+        display: flex;
+        flex-direction: column;
+        font-size: 16px;
+        margin: 0 15px;
+
+        .songRow, .itemRow {
+            display: flex;
+            margin: 2px 0;
+            align-items: center;
+
+            .selectionContainer {
+                display: flex;
+                margin-right: 5px;
+            }
+            span {
+                display: flex;
+                align-self: center;
+            }
+            .songLocation, .itemName {
+                width: 2.8em;
+                img { width: 40px; height: 40px; }
+            }
+            .songName { }
+        }
+    }
+    #items {
+        flex-wrap: wrap;
+        justify-content: center;
+        height: 32;
+
+        .woth {
+            background: #6e9b6b;
+        }
+        .itemRow {
+            margin: 0 12px;
+            padding: 3px;
+
+            .zone {
+                font-size: 15px;
+            }
+        }
+    }
+}

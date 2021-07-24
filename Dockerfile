@@ -1,8 +1,8 @@
 
-FROM alpine:3.7 AS base
+FROM alpine:3.13.5 AS base
 WORKDIR /home/app
 RUN apk add --no-cache \
-    nodejs=8.9.3-r1 \
+    nodejs=14.16.1-r1 \
     vim  \
     bash \
     curl \
@@ -19,6 +19,7 @@ ENV USE_CONSUL_DB       "true"
 
 
 FROM base AS src
+RUN apk add --no-cache npm && rm -rf /var/cache/apk/*
 RUN npm install -g pm2@2.10.1 -only=prod --no-optional --no-package-lock
 ADD package.json /home/app/package.json
 RUN npm install -only=prod --no-optional --no-package-lock
@@ -31,7 +32,7 @@ ADD server /home/app/server
 ADD docker-compose.yml /home/app/docker-compose.yml
 HEALTHCHECK --interval=5s --timeout=2s --start-period=5s \
     CMD exit $(curl -sS http://localhost/healthcheck; echo $?)
-LABEL com.consul.service="base_react_app"
+LABEL com.consul.service="zootr-tracker"
 ENTRYPOINT ["pm2-runtime", "server/pm2.config.js"]
 CMD [""]
 
@@ -48,6 +49,6 @@ COPY --from=src /usr/lib/node_modules/pm2 /usr/lib/node_modules/pm2
 RUN ln -s /usr/lib/node_modules/pm2/bin/pm2* /usr/bin
 HEALTHCHECK --interval=10s --timeout=2s --start-period=30s \
     CMD exit $(curl -sS http://localhost/healthcheck; echo $?)
-LABEL com.consul.service="base_react_app"
+LABEL com.consul.service="zootr-tracker"
 ENTRYPOINT ["pm2-runtime", "server/pm2.config.js"]
 CMD [""]

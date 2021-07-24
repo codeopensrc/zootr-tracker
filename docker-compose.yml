@@ -4,7 +4,7 @@ services:
         build:
             context: .
             target: prod
-        image: registry.codeopensrc.com/os/react:0.3.0
+        image: registry.codeopensrc.com/os/zootr-tracker:0.1.0
         ports:
             - "5000:80"
         deploy:

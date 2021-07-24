@@ -33,9 +33,10 @@ module.exports = [{
         loaders: [
             {test: /\.less/, loaders: ["style-loader", "css-loader", "less-loader"] },
             {test: /\.jsx/, loader: "babel-loader", query: {cacheDirectory: true, presets: ["es2015", "react", "stage-0"] }},
-            {test: /\.js/, loader: "babel-loader", query: {cacheDirectory: true, presets: ["es2015", "react", "stage-0"] }}
+            {test: /\.js/, loader: "babel-loader", query: {cacheDirectory: true, presets: ["es2015", "react", "stage-0"] }},
+            {test: /\.json/, loader: "json-loader", query: {cacheDirectory: true, presets: ["es2015", "react", "stage-0"] }}
         ]
     },
-    resolve: ["", ".less", ".js", ".jsx"],
+    resolve: ["", ".less", ".js", ".jsx", ".json"],
     plugins: plugins
 }]

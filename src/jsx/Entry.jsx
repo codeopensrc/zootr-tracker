@@ -10,9 +10,9 @@ import {
 } from 'react-router-dom';
 
 import Home from "./Home.jsx"
-import About from "./About.jsx"
-import { Menu } from "os-npm-util";
-import { ErrorHandler } from "os-npm-util";
+//import About from "./About.jsx"
+//import { Menu } from "os-npm-util";
+//import { ErrorHandler } from "os-npm-util";
 
 require("../style/Entry.less")
 
@@ -29,21 +29,20 @@ class Entry extends React.Component {
 
     render() {
 
+        //<Menu />
+        //<ErrorHandler />
+        // <div id={"component-header"}>
+        //    <Link to={"/"} className={"headerButton"}>Home</Link>
+        //    <Link to={"/about"} className={"headerButton"}>About</Link>
+        //</div>
+        //<Route path={"/about"} component={About} />
+
         return (
             <Router>
                 <div id={"component-entry"}>
-                    <Menu />
-                    <ErrorHandler />
-                    <div id={"component-header"}>
-                        <Link to={"/"} className={"headerButton"}>Home</Link>
-                        <Link to={"/about"} className={"headerButton"}>About</Link>
-                    </div>
-
                     <Switch>
-                        <Route exact path={"/"} component={Home} />
-                        <Route path={"/about"} component={About} />
+                        <Route path={"/"} component={Home} />
                     </Switch>
-
                 </div>
             </Router>
         );

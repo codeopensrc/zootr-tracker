@@ -4,7 +4,7 @@ services:
         build:
             context: .
             target: src
-        image: registry.codeopensrc.com/os/react:dev
+        image: registry.codeopensrc.com/os/zootr-tracker:dev
         entrypoint: ["pm2-dev", "server/pm2.config.js"]
         volumes:
             - "${FOLDER_LOCATION:-.}/pub:/home/app/pub"
@@ -14,7 +14,7 @@ services:
         ports:
             - "5005:80"
         labels:
-            com.consul.service: base_react_app
+            com.consul.service: zootr-tracker
         deploy:
             replicas: 1
             update_config:
