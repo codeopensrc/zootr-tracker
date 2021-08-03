@@ -15,6 +15,8 @@ class Home extends React.Component {
         this.state = {
             woth: [],
             barren: [],
+            hints: [],
+            hint: ["", ""],
         }
         this.selectRefs = [];
         this.divRefs = [];
@@ -68,6 +70,51 @@ class Home extends React.Component {
         })
         list.push(dropdown)
         return list;
+    }
+
+    hintDropdown(stateArr, miscHints, miscItems) {
+        let miscHintsOpts = miscHints.map((optionItem, ind) => {
+            return ( <option key={ind} value={optionItem}>{optionItem}</option> );
+        })
+        let miscItemsOpts = miscItems.map((optionItem, ind) => {
+            return ( <option key={ind} value={optionItem}>{optionItem}</option> );
+        })
+        let dropdown = (
+            <div key={"dropdown"} >
+                <select value={this.state.hint[0]} onChange={this.updateHint.bind(this, 0)}>{miscHintsOpts}</select>
+                <select value={this.state.hint[1]} onChange={this.updateHint.bind(this, 1)}>{miscItemsOpts}</select>
+                <button onClick={this.addHint.bind(this, stateArr)}>Add</button>
+            </div>
+        )
+
+        let list = this.state[stateArr].map((hint, i) => {
+            return (
+                <div key={i} style={{display: "flex"}}>
+                    <select style={{background: "white"}} value={hint[0]} disabled>{miscHintsOpts}</select>
+                    <select style={{background: "white"}} value={hint[1]} disabled>{miscItemsOpts}</select>
+                    <div>
+                        <button onClick={this.removeItem.bind(this, i, stateArr)}>X</button>
+                    </div>
+                </div>
+            )
+        })
+        list.push(dropdown)
+        return list;
+    }
+
+    updateHint(ind, e) {
+        let val = e.target.value
+        let currentHint = ind === 0 ? val : this.state.hint[0];
+        let currentItem = ind === 1 ? val : this.state.hint[1];
+        let updatedHint = [currentHint, currentItem]
+        this.setState({hint: updatedHint})
+    }
+
+    addHint(stateArr, e) {
+        let hint = this.state.hint
+        let currentArr = this.state[stateArr].slice();
+        currentArr.push(hint)
+        this.setState({[stateArr]: currentArr, hint: ["", ""]})
     }
 
     addItem(stateArr, e) {
@@ -219,6 +266,10 @@ class Home extends React.Component {
         let medal_zones = ["????", "FREE", "DEKU", "DODO", "JABU", "FRST", "FIRE", "WATR", "SPRT", "SHDW"]
         let medalRows = this.createColumn("medals", medallions, medal_zones);
 
+
+        let miscHints = ["", "LW: Skull Mask", "Market: Chest", "Kak: Cuccos", "GY: Sun", "GY: Flame", "DMT: Biggoron", "GC: Hammer", "GC: Dance", "GC: Pottery", "ZR: Final Frog", "ZF: Under Ice", "ZD: Unfreeze", "L Hylia: Sun", "GV: Hammer", "FT: Pierre", "FT: Top Flare", "WT: Boulder", "WT: River", "Spirit: ColoLH", "Spirit: ColoRH", "Shadow: Invis Maze", "GTG: Sunken", "GTG: Final Thieves", "BotW: DeadHand"]
+        let miscItems = ["", "Dead", "SM Key", "Boss Key", ...itemNames]
+
         return (
             <div id="component-home">
                 <div style={{display: "flex"}}>
@@ -257,8 +308,12 @@ class Home extends React.Component {
 
                 <div>
                     <h3>Misc Hints</h3>
-                    <textarea style={{margin: "0 14px"}} rows="9" cols="40"></textarea>
-                    <textarea style={{margin: "0 10px"}} rows="9" cols="40"></textarea>
+                    <div style={{display: "flex", justifyContent: "center"}}>
+                        <div>
+                            {this.hintDropdown("hints", miscHints, miscItems)}
+                        </div>
+                        <textarea style={{margin: "0 10px"}} rows="9" cols="40"></textarea>
+                    </div>
                 </div>
             </div>
         );
