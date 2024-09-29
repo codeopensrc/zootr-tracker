@@ -5,6 +5,7 @@ app:
   replicaCount: 1
   image:
     repository: registry.codeopensrc.com/os/zootr-tracker/app
+    tag: 0.2.0
   secretStringData:
     MONGO_DB_NAME: "zootr"
     SAMPLE_SECRET: "SAMPLE_SECRET_ENV_VAR"
