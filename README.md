@@ -33,9 +33,9 @@ If you have a kubernetes environment ready and helm installed -
 Method 1)  
 Using the remote chart repository.
 - Add the chart repository:  
-`helm repo add os https://gitlab.codeopensrc.com/api/v4/projects/156/packages/helm/stable`  
+`helm repo add oot https://gitlab.codeopensrc.com/api/v4/projects/156/packages/helm/stable`  
 - Install the chart:  
-`helm upgrade --install zootr os/zootr`  
+`helm upgrade --install zootr oot/zootr`  
 - Port-foward a local port (here we use `5000`) to the `zootr-app` service:  
 `kubectl port-forward service/zootr-app 5000:80`  
 -   Project will be available at `localhost:5000`  
