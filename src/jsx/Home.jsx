@@ -1,12 +1,11 @@
 "use strict";
 
 import React from 'react';
-import DOM from 'react-dom';
-import { api } from "os-npm-util";
+import { api } from "os-npm-util/client";
 
 import sprites from "../js/sprites.json"
 
-require("../style/Home.less")
+import "../style/Home.less"
 
 class Home extends React.Component {
 
@@ -321,4 +320,4 @@ class Home extends React.Component {
 
 }
 
-module.exports = Home
+export { Home as default };

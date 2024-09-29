@@ -3,11 +3,15 @@ logs
 .git
 dumps
 
-app.bundle.js
 index.html
 npm-debug.log
 .DS_Store
-*.swp
 
 ignore/*
-.env
+*bundle.js
+*.env
+*.swp
+*.swo
+*.vim
+*.tgz
+env*.yaml
