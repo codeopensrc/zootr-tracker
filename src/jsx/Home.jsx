@@ -288,13 +288,13 @@ class Home extends React.Component {
 
                 <div style={{display: "flex"}}>
                     <div className={"zoneLists"}>
-                        <h3>Way of the Hero</h3>
+                        <h4>Way of the Hero</h4>
                         <div>
                             {this.createZoneDropdown("woth", zones)}
                         </div>
                     </div>
                     <div className={"zoneLists"}>
-                        <h3>Barren</h3>
+                        <h4>Barren</h4>
                         <div>
                             {this.createZoneDropdown("barren", zones)}
                         </div>

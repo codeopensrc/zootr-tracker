@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
 
-    > div { margin: 0 10px; text-align: center; }
+    > div { margin: 0 5px; text-align: center; }
 
     #songs, #items {
         height: 27em;
@@ -28,20 +28,27 @@
 
         .medalName {}
         .medalZone {
-            font-size: 11px;
+            font-size: 12px;
         }
     }
 
     .zoneLists {
-        width: 45%;
+        width: 46%;
+        display: flex;
+        flex-direction: column;
+        margin: 3px auto;
 
+        > h4 { margin: 10px; }
         > div {
             display: flex;
-            flex-direction: row;
             flex-wrap: wrap;
+            height: 10em;
+            flex-direction: column;
+            align-content: flex-start;
 
             .selectBox {
-                margin: 5px;
+                margin: 2px;
+                display: flex;
                .zone { background: white; }
             }
         }
