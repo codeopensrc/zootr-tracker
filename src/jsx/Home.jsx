@@ -7,6 +7,26 @@ import sprites from "../js/sprites.json"
 
 import "../style/Home.less"
 
+const songLocations = ["", "Start", "LLR", "Windmill", "C Saria", "A Saria",
+    "DMC", "Composer", "ToT", "Ice", "Colo", "Kak", "OOT"];
+const songNames = ["Lullaby", "Epona", "Saria", "Sun", "Time", "Storms",
+    "Forest", "Fire", "Water", "Spirit", "Shadow", "Light"];
+const itemNames = ["Boomer", "Hammer", "Rutos", "Mirror", "L Arrow", "F Arrow",  "Dins", "Hovers", "Irons", "Goron", "Zora",
+    "Lens", "Bombchu", "Sling", "Bombs", "Scale", "Strength", "Hookshot", "Bottle", "Bow", "Magic", "Wallet"]
+const zones = ["", "K Forest", "LW", "H Field", "Market", "LLR", "Kak",
+    "Graveyard", "DM Trail", "DM Crater", "Goron City", "Z River", "Z Fountain", "Z Domain",
+    "L Hylia", "G Valley", "G Fortress", "Colossus", "Deku", "Dodongo", "Jabu", "BotW",
+    "Forest", "Fire", "Water", "Shadow", "Spirit", "Ice", "GTG", "G Castle",
+    "ToT", "HC", "Wasteland", "OGC", "SFM"];
+const multi_options = [{name:"Sling", num:3}, {name:"Bombs", num:3}, {name:"Scale", num:2},
+    {name:"Strength", num:3}, {name:"Hookshot", num:2}, {name:"Bottle", num:3}, {name:"Bow", num:3},
+    {name:"Magic", num:2}, {name:"Wallet", num:2}];
+const medallions = ["Forest_Medal", "Fire_Medal", "Water_Medal", "Spirit_Medal", "Shadow_Medal", "Light_Medal",
+"Forest_Stone", "Fire_Stone", "Water_Stone"]
+const medal_zones = ["????", "FREE", "DEKU", "DODO", "JABU", "FRST", "FIRE", "WATR", "SPRT", "SHDW"]
+const miscHints = ["", "LW: Skull Mask", "Market: Chest", "Kak: Cuccos", "GY: Sun", "GY: Flame", "DMT: Biggoron", "GC: Hammer", "GC: Dance", "GC: Pottery", "ZR: Final Frog", "ZF: Under Ice", "ZD: Unfreeze", "L Hylia: Sun", "GV: Hammer", "FT: Pierre", "FT: Top Flare", "WT: Boulder", "WT: River", "Spirit: ColoLH", "Spirit: ColoRH", "Shadow: Invis Maze", "GTG: Sunken", "GTG: Final Thieves", "BotW: DeadHand"]
+const miscItems = ["", "Dead", "SM Key", "Boss Key", ...itemNames]
+
 class Home extends React.Component {
 
     constructor(props) {
@@ -26,10 +46,11 @@ class Home extends React.Component {
             r ? this.divRefs[ind] = r : null;
         }
         this.createColumn = this.createColumn.bind(this)
-        this.zoneDropdown = this.zoneDropdown.bind(this)
+        this.createZoneDropdown = this.createZoneDropdown.bind(this)
+        this.createHintDropdown = this.createHintDropdown.bind(this)
         this.addItem = this.addItem.bind(this)
         this.removeItem = this.removeItem.bind(this)
-        this.selectionChange = this.selectionChange.bind(this)
+        this.highlightSelectOnChange = this.highlightSelectOnChange.bind(this)
         this.changeImage = this.changeImage.bind(this)
     }
 
@@ -48,7 +69,7 @@ class Home extends React.Component {
         })
     }
 
-    zoneDropdown(stateArr, options) {
+    createZoneDropdown(stateArr, options) {
         let optionsArr = options.map((optionItem, ind2) => {
             return ( <option key={ind2} value={optionItem}>{optionItem}</option> );
         })
@@ -71,7 +92,7 @@ class Home extends React.Component {
         return list;
     }
 
-    hintDropdown(stateArr, miscHints, miscItems) {
+    createHintDropdown(stateArr, miscHints, miscItems) {
         let miscHintsOpts = miscHints.map((optionItem, ind) => {
             return ( <option key={ind} value={optionItem}>{optionItem}</option> );
         })
@@ -121,7 +142,7 @@ class Home extends React.Component {
         let currentArr = this.state[stateArr].slice();
         currentArr.push(val)
         this.setState({[stateArr]: currentArr}, () => {
-            this.selectionChange()
+            this.highlightSelectOnChange()
         })
     }
 
@@ -129,11 +150,11 @@ class Home extends React.Component {
         let currentArr = this.state[stateArr].slice();
         currentArr.splice(i, 1)
         this.setState({[stateArr]: currentArr}, () => {
-            this.selectionChange()
+            this.highlightSelectOnChange()
         })
     }
 
-    selectionChange() {
+    highlightSelectOnChange() {
         this.selectRefs.forEach((ref, ind) => {
             let div = this.divRefs[ind]
             if(this.state.woth.some((way) => way === ref.value)) {
@@ -206,7 +227,7 @@ class Home extends React.Component {
                 <div className={"selectionContainer"}>
                     <select ref={colType === "items" && this.assignSelectRef.bind(this, ind)}
                     className={ styles[colType].options }
-                    onChange={this.selectionChange}>{optionsArr}
+                    onChange={this.highlightSelectOnChange}>{optionsArr}
                     </select>
                 </div>
             )
@@ -218,7 +239,7 @@ class Home extends React.Component {
                             <div key={i} className={"selectionContainer"}>
                                 <select ref={colType === "items" && i === 0 && this.assignSelectRef.bind(this, ind)}
                                 className={ styles[colType].options }
-                                onChange={this.selectionChange}>{optionsArr}</select>
+                                onChange={this.highlightSelectOnChange}>{optionsArr}</select>
                             </div>)
                     })
                 }
@@ -240,34 +261,9 @@ class Home extends React.Component {
 
     render() {
 
-        let songLocations = ["", "Start", "LLR", "Windmill", "C Saria", "A Saria",
-            "DMC", "Composer", "ToT", "Ice", "Colo", "Kak", "OOT"];
-        let songNames = ["Lullaby", "Epona", "Saria", "Sun", "Time", "Storms",
-            "Forest", "Fire", "Water", "Spirit", "Shadow", "Light"];
         let songRows = this.createColumn("songs", songNames, songLocations);
-
-
-        let itemNames = ["Boomer", "Hammer", "Rutos", "Mirror", "L Arrow", "F Arrow",  "Dins", "Hovers", "Irons", "Goron", "Zora",
-            "Lens", "Bombchu", "Sling", "Bombs", "Scale", "Strength", "Hookshot", "Bottle", "Bow", "Magic", "Wallet"]
-        let zones = ["", "K Forest", "LW", "H Field", "Market", "LLR", "Kak",
-            "Graveyard", "DM Trail", "DM Crater", "Goron City", "Z River", "Z Fountain", "Z Domain",
-            "L Hylia", "G Valley", "G Fortress", "Colossus", "Deku", "Dodongo", "Jabu", "BotW",
-            "Forest", "Fire", "Water", "Shadow", "Spirit", "Ice", "GTG", "G Castle",
-            "ToT", "HC", "Wasteland", "OGC", "SFM"];
-        let multi_options = [{name:"Sling", num:3}, {name:"Bombs", num:3}, {name:"Scale", num:2},
-            {name:"Strength", num:3}, {name:"Hookshot", num:2}, {name:"Bottle", num:3}, {name:"Bow", num:3},
-            {name:"Magic", num:2}, {name:"Wallet", num:2}];
         let itemRows = this.createColumn("items", itemNames, zones, multi_options);
-
-
-        let medallions = ["Forest_Medal", "Fire_Medal", "Water_Medal", "Spirit_Medal", "Shadow_Medal", "Light_Medal",
-        "Forest_Stone", "Fire_Stone", "Water_Stone"]
-        let medal_zones = ["????", "FREE", "DEKU", "DODO", "JABU", "FRST", "FIRE", "WATR", "SPRT", "SHDW"]
         let medalRows = this.createColumn("medals", medallions, medal_zones);
-
-
-        let miscHints = ["", "LW: Skull Mask", "Market: Chest", "Kak: Cuccos", "GY: Sun", "GY: Flame", "DMT: Biggoron", "GC: Hammer", "GC: Dance", "GC: Pottery", "ZR: Final Frog", "ZF: Under Ice", "ZD: Unfreeze", "L Hylia: Sun", "GV: Hammer", "FT: Pierre", "FT: Top Flare", "WT: Boulder", "WT: River", "Spirit: ColoLH", "Spirit: ColoRH", "Shadow: Invis Maze", "GTG: Sunken", "GTG: Final Thieves", "BotW: DeadHand"]
-        let miscItems = ["", "Dead", "SM Key", "Boss Key", ...itemNames]
 
         return (
             <div id="component-home">
@@ -294,13 +290,13 @@ class Home extends React.Component {
                     <div className={"zoneLists"}>
                         <h3>Way of the Hero</h3>
                         <div>
-                            {this.zoneDropdown("woth", zones)}
+                            {this.createZoneDropdown("woth", zones)}
                         </div>
                     </div>
                     <div className={"zoneLists"}>
                         <h3>Barren</h3>
                         <div>
-                            {this.zoneDropdown("barren", zones)}
+                            {this.createZoneDropdown("barren", zones)}
                         </div>
                     </div>
                 </div>
@@ -309,9 +305,9 @@ class Home extends React.Component {
                     <h3>Misc Hints</h3>
                     <div style={{display: "flex", justifyContent: "center"}}>
                         <div>
-                            {this.hintDropdown("hints", miscHints, miscItems)}
+                            {this.createHintDropdown("hints", miscHints, miscItems)}
                         </div>
-                        <textarea style={{margin: "0 10px"}} rows="9" cols="40"></textarea>
+                        <textarea style={{margin: "0 10px"}} rows="5" cols="40"></textarea>
                     </div>
                 </div>
             </div>
