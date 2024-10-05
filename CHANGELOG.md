@@ -1,4 +1,11 @@
 
+# 0.3.0 - (*2024-10-05*)
+
+#### **Added (1)**
+- [ [9f26e37](https://gitlab.codeopensrc.com/os/zootr-tracker/-/commit/9f26e37) ] **`added`** - Add dev auth and compact ui option  
+
+<br><br><br>
+
 # 0.2.1 - (*2024-09-30*)
 
 #### **Added (1)**

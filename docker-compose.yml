@@ -43,7 +43,7 @@ services:
     ###############################################################
     ###############################################################
     main:
-        image: registry.codeopensrc.com/os/zootr-tracker/app:0.2.1
+        image: registry.codeopensrc.com/os/zootr-tracker/app:0.3.0
         ports: ["5200:80"]
         labels: ["com.codeopensrc.consul=zootr-tracker"]
         build:
