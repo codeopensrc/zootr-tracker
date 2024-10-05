@@ -14,12 +14,17 @@ auth.URL = AUTH_URL ? `${AUTH_PROTO}//auth.${AUTH_DOMAIN}:${AUTH_PORT}` : "";
 auth.USE_AUTH = AUTH_URL !== "";
 
 const APP_TO_CHECK = "zootr-tracker"
+// For auth flow testing
+const DEV_USER_KEY = "devuser";
 
 // TODO: Maybe start caching credentials for a minute at a time to prevent
 // multiple consecutive and frequent calls
 auth.getAccess = function(headers, accessReq, callback) {
     if(!auth.USE_AUTH) {
-        return callback({status: true})
+        if(headers['auth-email'] === DEV_USER_KEY) {
+            return callback({status: true})
+        }
+        return callback({status: false})
     }
 
     auth.checkAccess({headers, app: APP_TO_CHECK, accessReq: accessReq})
@@ -42,7 +47,10 @@ auth.getAccess = function(headers, accessReq, callback) {
 
 auth.sendLogout = function (headers, respond) {
     if(!auth.USE_AUTH) {
-        return respond({status: true, data: "Success"})
+        if(headers['auth-email'] === DEV_USER_KEY) {
+            return respond({status: true, data: "Success"})
+        }
+        return respond({status: false})
     }
 
     auth.logout({headers, app: APP_TO_CHECK})
@@ -61,7 +69,10 @@ auth.sendLogout = function (headers, respond) {
 
 auth.getUser = function (headers, respond) {
     if(!auth.USE_AUTH) {
-        return respond({status: true, data: "devuser"})
+        if(headers['auth-email'] === DEV_USER_KEY) {
+            return respond({status: true, data: DEV_USER_KEY})
+        }
+        return respond({status: false})
     }
 
     auth.getAccess(headers, "user", ({status, data}) => {

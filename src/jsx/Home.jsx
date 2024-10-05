@@ -32,10 +32,15 @@ class Home extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            useSimple: false,
             woth: [],
             barren: [],
             hints: [],
             hint: ["", ""],
+            "auth-email": this.getCookie("Auth-Email"),
+            //"auth-key": this.getCookie("Auth-Key"),
+            keyDisplay: false,
+            sampleKey: "",
         }
         this.selectRefs = [];
         this.divRefs = [];
@@ -48,23 +53,70 @@ class Home extends React.Component {
         this.createColumn = this.createColumn.bind(this)
         this.createZoneDropdown = this.createZoneDropdown.bind(this)
         this.createHintDropdown = this.createHintDropdown.bind(this)
+        this.addHint = this.addHint.bind(this)
+        this.updateHint = this.updateHint.bind(this)
         this.addItem = this.addItem.bind(this)
         this.removeItem = this.removeItem.bind(this)
         this.highlightSelectOnChange = this.highlightSelectOnChange.bind(this)
         this.changeImage = this.changeImage.bind(this)
+
+        this.updateSampleKey = this.updateSampleKey.bind(this)
+        this.getCookie = this.getCookie.bind(this)
+        this.setCookie = this.setCookie.bind(this)
+        this.login = this.login.bind(this)
+        this.logout = this.logout.bind(this)
+        this.toggleSimpleDisplay = this.toggleSimpleDisplay.bind(this)
     }
 
-    componentDidMount() {
-        //console.log(this.selectRefs)
+    componentDidMount() { }
+
+    getCookie(name) {
+        return document.cookie.split('; ').reduce((acc, v) => {
+            const split = v.split('=')
+            return split[0] === name ? decodeURIComponent(split[1]) : acc
+        }, '')
     }
 
-    serverCall() {
-        api.get(`/test`, (res) => {
+    setCookie(name, value, hours = 24 * 30 * 12) {
+        const expires = new Date(Date.now() + hours * 36e5).toUTCString()
+        let domainRegex = /(\w+)\.(\w+)$/
+        let domain = domainRegex.test(location.hostname)
+            ? `.${location.hostname.match(domainRegex)[0]}`
+            : "localhost"
+        document.cookie = name + '=' + value + '; sameSite=strict; expires=' + expires + `; domain=${domain};`
+    }
+
+    login() {
+        this.setCookie("Auth-Email", this.state.sampleKey)
+        api.get(`/username`, (res) => {
             if(res.status) {
-                // Do something
+                let email = this.getCookie("Auth-Email")
+                this.setState({
+                    "auth-email": email,
+                    sampleKey: email
+                })
             }
             else {
-                // Handle error
+                //TODO: Inform of error
+                console.log(res)
+                this.setCookie("Auth-Email", '')
+                this.setState({"auth-email": ''})
+            }
+        })
+    }
+
+    logout() {
+        api.post(`/logout`, (res) => {
+            if(res.status) {
+                this.setCookie("Auth-Email", "")
+                this.setState({
+                    "auth-email": "",
+                    sampleKey: "" 
+                })
+            }
+            else {
+                //TODO: Inform of error
+                console.log(res)
             }
         })
     }
@@ -75,7 +127,7 @@ class Home extends React.Component {
         })
         let dropdown = (
             <div key={"dropdown"} className={"selectBox"}>
-                <select className={"zone"} value={""} onChange={this.addItem.bind(this, stateArr)}>{optionsArr}</select>
+                <select className={"zone"} value={""} onChange={(e)=>this.addItem(e, stateArr)}>{optionsArr}</select>
             </div>
         )
         let list = this.state[stateArr].map((zone, i) => {
@@ -83,7 +135,7 @@ class Home extends React.Component {
                 <div key={i} className={"selectBox"}>
                     <select className={"zone"} value={zone} disabled>{optionsArr}</select>
                     <div>
-                        <button className={"delete"} onClick={this.removeItem.bind(this, i, stateArr)}>X</button>
+                        <button className={"delete"} onClick={(e)=>this.removeItem(e, i, stateArr)}>X</button>
                     </div>
                 </div>
             )
@@ -101,9 +153,9 @@ class Home extends React.Component {
         })
         let dropdown = (
             <div key={"dropdown"} >
-                <select value={this.state.hint[0]} onChange={this.updateHint.bind(this, 0)}>{miscHintsOpts}</select>
-                <select value={this.state.hint[1]} onChange={this.updateHint.bind(this, 1)}>{miscItemsOpts}</select>
-                <button onClick={this.addHint.bind(this, stateArr)}>Add</button>
+                <select value={this.state.hint[0]} onChange={(e)=>this.updateHint(e, 0)}>{miscHintsOpts}</select>
+                <select value={this.state.hint[1]} onChange={(e)=>this.updateHint(e, 1)}>{miscItemsOpts}</select>
+                <button onClick={(e)=>this.addHint(e, stateArr)}>Add</button>
             </div>
         )
 
@@ -113,7 +165,7 @@ class Home extends React.Component {
                     <select style={{background: "white"}} value={hint[0]} disabled>{miscHintsOpts}</select>
                     <select style={{background: "white"}} value={hint[1]} disabled>{miscItemsOpts}</select>
                     <div>
-                        <button onClick={this.removeItem.bind(this, i, stateArr)}>X</button>
+                        <button onClick={(e)=>this.removeItem(e, i, stateArr)}>X</button>
                     </div>
                 </div>
             )
@@ -122,7 +174,7 @@ class Home extends React.Component {
         return list;
     }
 
-    updateHint(ind, e) {
+    updateHint(e, ind) {
         let val = e.target.value
         let currentHint = ind === 0 ? val : this.state.hint[0];
         let currentItem = ind === 1 ? val : this.state.hint[1];
@@ -130,14 +182,14 @@ class Home extends React.Component {
         this.setState({hint: updatedHint})
     }
 
-    addHint(stateArr, e) {
+    addHint(e, stateArr) {
         let hint = this.state.hint
         let currentArr = this.state[stateArr].slice();
         currentArr.push(hint)
         this.setState({[stateArr]: currentArr, hint: ["", ""]})
     }
 
-    addItem(stateArr, e) {
+    addItem(e, stateArr) {
         let val = e.target.value
         let currentArr = this.state[stateArr].slice();
         currentArr.push(val)
@@ -146,7 +198,7 @@ class Home extends React.Component {
         })
     }
 
-    removeItem(i, stateArr) {
+    removeItem(e, i, stateArr) {
         let currentArr = this.state[stateArr].slice();
         currentArr.splice(i, 1)
         this.setState({[stateArr]: currentArr}, () => {
@@ -212,10 +264,11 @@ class Home extends React.Component {
     }
 
     createColumn(colType, list, options, multi_options = []) {
+        let s = this.state.useSimple ? "simple" : ""
         let styles = {
-            songs: {row: "songRow", name: "songLocation", options: "songName"},
-            items: {row: "itemRow", name: "itemName", options: "zone"},
-            medals: {row: "medalRow", name: "medalName", options: "medalZone"},
+            songs: {row: `${s}songRow`, name: `${s}songLocation`, options: `${s}songName`},
+            items: {row: `${s}itemRow`, name: `${s}itemName`, options: `${s}zone`},
+            medals: {row: `${s}medalRow`, name: `${s}medalName`, options: `${s}medalZone`},
         }
 
         let rows = list.map((listItem, ind) => {
@@ -223,7 +276,7 @@ class Home extends React.Component {
                 return ( <option key={ind2} value={optionItem}>{optionItem}</option> );
             })
 
-            let selection = (
+            let selection = this.state.useSimple === true ? null : (
                 <div className={"selectionContainer"}>
                     <select ref={colType === "items" && this.assignSelectRef.bind(this, ind)}
                     className={ styles[colType].options }
@@ -232,7 +285,7 @@ class Home extends React.Component {
                 </div>
             )
 
-            multi_options.forEach((multi_option) => {
+            this.state.useSimple == true ? null : multi_options.forEach((multi_option) => {
                 if(multi_option.name === listItem) {
                     selection = [...Array(multi_option.num)].map((e, i) => {
                         return (
@@ -259,14 +312,43 @@ class Home extends React.Component {
         return rows;
     }
 
+    updateSampleKey(e) {
+        this.setState({sampleKey: e.target.value})
+    }
+    toggleSimpleDisplay() {
+        let s = this.state.useSimple
+        this.setState({useSimple: !s})
+    }
+
     render() {
 
         let songRows = this.createColumn("songs", songNames, songLocations);
         let itemRows = this.createColumn("items", itemNames, zones, multi_options);
         let medalRows = this.createColumn("medals", medallions, medal_zones);
 
+        let loginInput = this.state["auth-email"] ? null : <input type={this.state.keyDisplay ? "text" : "password"}
+                        style={{position: "relative", left: "25px"}}
+                        placeholder={`Email`} value={this.state.sampleKey} 
+                        onChange={(e)=>this.updateSampleKey(e)}
+                    />
+        let keyDisplay = this.state["auth-email"] ? null : <span id={"togglePass"} 
+                        className={this.state.keyDisplay ? "vis" : "vis-off"}
+                        onClick={() => this.setState({keyDisplay: !this.state.keyDisplay}) }>
+                    </span>
+        let loginButton = this.state["auth-email"]
+            ? <div>User: <b>{this.state["auth-email"]}</b> <button onClick={this.logout}>Logout</button></div> 
+            : <button onClick={this.login}>Login</button>
+
+        let simpleDisplayText = this.state.useSimple ? "Compact" : "Normal"
+
         return (
             <div id="component-home">
+                <div>
+                    {loginInput}
+                    {keyDisplay}
+                    {loginButton}
+                    <div>Item Display: <b>{simpleDisplayText}</b> <button onClick={this.toggleSimpleDisplay}>Toggle</button></div>
+                </div>
                 <div style={{display: "flex"}}>
                     <div>
                         <h3>Songs</h3>
