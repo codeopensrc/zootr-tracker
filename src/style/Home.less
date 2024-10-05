@@ -81,4 +81,20 @@
             .songName { }
         }
     }
+
+    #togglePass {
+        position: relative;
+        display: inline-block;
+        //left: -30px;
+        top: 3px;
+        width: 30px;
+        height: 20px;
+        cursor: pointer;
+        &.vis{
+            background: url("images/visibility.svg") no-repeat;
+        }
+        &.vis-off {
+            background: url("images/visibility_off.svg") no-repeat;
+        }
+    }
 }

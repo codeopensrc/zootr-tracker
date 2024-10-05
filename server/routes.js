@@ -6,7 +6,7 @@ const url = require("url");
 const db = require("./mongo.js");
 //const mongoose = require('mongoose')
 //const ObjectID = mongoose.Types.ObjectId
-//const auth = require("./auth.js");
+const auth = require("./auth.js");
 
 // Toggle initializing DB
 const enableDB = process.env.ENABLE_DB == "true"
@@ -41,10 +41,10 @@ const routes = function (req, res) {
             break;
             //case "/api/get/menu": auth.getMenu(headers, respond) //username / key
             //break;
-            //case "/api/get/username": auth.getUser(headers, respond) //username / key
-            //break;
-            //case "/api/post/logout": auth.sendLogout(headers, respond) //username / key
-            //break;
+            case "/api/get/username": auth.getUser(headers, respond) //username / key
+            break;
+            case "/api/post/logout": auth.sendLogout(headers, respond) //username / key
+            break;
             case "/api/get/sampletest": respond("I am a test response from the server")
             break;
             case "/api/get/mongoquery": sampleQuery("sample", res)
