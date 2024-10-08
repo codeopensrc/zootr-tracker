@@ -1,4 +1,11 @@
 
+# 0.4.0 - (*2024-10-08*)
+
+#### **Added (1)**
+- [ [4d1e8fa](https://gitlab.codeopensrc.com/os/zootr-tracker/-/commit/4d1e8fa) ] **`added`** - Add basic single user savestate  
+
+<br><br><br>
+
 # 0.3.0 - (*2024-10-05*)
 
 #### **Added (1)**
