@@ -29,7 +29,7 @@ variables:
   BUILDKITD_POD: buildkitd-0
   BUILDKITD_NAMESPACE: buildkitd
   DOCKERFILE: Dockerfile
-  ENABLE_DB: "false"
+  ENABLE_DB: "true"
   SKAFFOLD_CLI_OPTS: "--interactive=false --update-check=false"
   SAMPLE_SECRET: "secret_value"
   RELEASE:

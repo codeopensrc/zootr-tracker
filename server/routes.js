@@ -53,6 +53,11 @@ const routes = function (req, res) {
             break;
             case "/api/delete/mongodelete": sampleDelete(parsed, "sample", headers, res)
             break;
+
+            case "/api/get/savestate": getSaveState("savestate", headers, res)
+            break;
+            case "/api/put/savestate": setSaveState(parsed, "savestate", headers, res)
+            break;
             default: respond();
         }
     })
@@ -82,6 +87,22 @@ function sampleDelete(clientJson, mongocollection, headers, res) {
     console.log("Server received sample DELETE from client: ", clientJson)
     !db.isConnected && res.end(JSON.stringify("Recieved DELETE for mongodelete! See routes.sampleDelete for enabling DB"))
     db.isConnected && db.remove(clientJson, mongocollection, headers, res)
+}
+
+
+function setSaveState(clientJson, mongocollection, headers, res) {
+    //TODO: Only log when debug logging enabled
+    console.log("Server received PUT from client: ", clientJson)
+    !db.isConnected && res.end(JSON.stringify("Recieved POST for savestate! See routes.setSaveState for enabling DB"))
+    db.isConnected && db.submit(clientJson, mongocollection, headers, res)
+}
+
+function getSaveState(mongocollection, headers, res) {
+    //TODO: Only log when debug logging enabled
+    console.log("Server received GET from client")
+    !db.isConnected && res.end(JSON.stringify("Received GET for savestate! See routes.getSaveState for enabling DB"))
+    //TODO: Update how we retrieve
+    db.isConnected && db.retrieveOne({user: headers['auth-email']}, mongocollection, res)
 }
 
 module.exports = routes;
