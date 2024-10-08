@@ -1,7 +1,8 @@
 ## skaffold helm deploy requires the image key
 ## IfNotPresent is also important incase we dont push the image
 .reloader_port: &reloader_port 5055
-.enable_db: &enable_db false
+.enable_db: &enable_db true
+.sts_claim_policy: &sts_claim_policy Retain ## Retain or Delete
 
 app:
   enabled: true
@@ -96,7 +97,7 @@ db:
   persistence:
     statefulset:
       persistentVolumeClaimRetentionPolicy:
-        whenDeleted: Delete
+        whenDeleted: *sts_claim_policy
   volumeClaimMounts:
     - mountPath: /data/db
       subPath: db

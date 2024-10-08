@@ -110,7 +110,7 @@ module.exports = {
             if(err) { return this.resWithErr(err, res) }
             res.setHeader("Content-Type", "application/json")
             res.writeHead(200, {'Access-Control-Allow-Origin' : '*'} );
-            res.end(JSON.stringify(docs));
+            res.end(JSON.stringify({status: true, data: docs}));
         });
     },
 
@@ -124,7 +124,7 @@ module.exports = {
             if(err) { return this.resWithErr(err, res) }
             res.setHeader("Content-Type", "application/json")
             res.writeHead(200, {'Access-Control-Allow-Origin' : '*'} );
-            res.end(JSON.stringify(doc));
+            res.end(JSON.stringify({status: true, data: doc}));
         });
     },
 
@@ -144,12 +144,15 @@ module.exports = {
 
             delete doc.id
 
-            collection.updateOne({"_id": id}, {$set: doc}, {upsert: true}, (err, docs) => {
+            collection.updateOne({"_id": id}, {$set: doc}, {upsert: true}, (err, upsertStatus) => {
                 if(err) { return this.resWithErr(err, res) }
+                //TODO: Log when debug logging enabled
+                //console.log(upsertStatus)
+                //Sample { acknowledged: true, modifiedCount: 1, upsertedId: null, upsertedCount: 0, matchedCount: 1 }
                 doc._id = id
                 res.setHeader("Content-Type", "application/json")
                 res.writeHead(200, {'Access-Control-Allow-Origin' : '*'} );
-                res.end(JSON.stringify(doc));
+                res.end(JSON.stringify({status: true, data: doc}));
             });
         })
     },
@@ -172,7 +175,7 @@ module.exports = {
                 if(err) { return this.resWithErr(err, res) }
                 res.setHeader("Content-Type", "text/html")
                 res.writeHead(200, {'Access-Control-Allow-Origin' : '*'} );
-                res.end(JSON.stringify("success"));
+                res.end(JSON.stringify({status: true, data: "success"}));
             });
         })
     },

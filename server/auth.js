@@ -16,12 +16,13 @@ auth.USE_AUTH = AUTH_URL !== "";
 const APP_TO_CHECK = "zootr-tracker"
 // For auth flow testing
 const DEV_USER_KEY = "devuser";
+const SECRET_KEY = process.env.SAMPLE_SECRET || "dev";
 
 // TODO: Maybe start caching credentials for a minute at a time to prevent
 // multiple consecutive and frequent calls
 auth.getAccess = function(headers, accessReq, callback) {
     if(!auth.USE_AUTH) {
-        if(headers['auth-email'] === DEV_USER_KEY) {
+        if(headers['auth-email'] === DEV_USER_KEY && headers['auth-key'] === SECRET_KEY) {
             return callback({status: true})
         }
         return callback({status: false})
@@ -47,7 +48,7 @@ auth.getAccess = function(headers, accessReq, callback) {
 
 auth.sendLogout = function (headers, respond) {
     if(!auth.USE_AUTH) {
-        if(headers['auth-email'] === DEV_USER_KEY) {
+        if(headers['auth-email'] === DEV_USER_KEY && headers['auth-key'] === SECRET_KEY) {
             return respond({status: true, data: "Success"})
         }
         return respond({status: false})
@@ -69,7 +70,7 @@ auth.sendLogout = function (headers, respond) {
 
 auth.getUser = function (headers, respond) {
     if(!auth.USE_AUTH) {
-        if(headers['auth-email'] === DEV_USER_KEY) {
+        if(headers['auth-email'] === DEV_USER_KEY && headers['auth-key'] === SECRET_KEY) {
             return respond({status: true, data: DEV_USER_KEY})
         }
         return respond({status: false})
