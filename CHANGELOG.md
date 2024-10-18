@@ -1,4 +1,11 @@
 
+# 0.5.0 - (*2024-10-18*)
+
+#### **Added (1)**
+- [ [5e15c3b](https://gitlab.codeopensrc.com/os/zootr-tracker/-/commit/5e15c3b) ] **`added, changed`** - Save state on dropdown change  
+
+<br><br><br>
+
 # 0.4.0 - (*2024-10-08*)
 
 #### **Added (1)**
