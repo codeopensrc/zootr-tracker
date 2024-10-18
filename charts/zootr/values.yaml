@@ -1,4 +1,5 @@
-.enable_db: &enable_db false
+.enable_db: &enable_db true
+.sts_claim_policy: &sts_claim_policy Retain ## Retain or Delete
 
 app:
   enabled: true
@@ -14,3 +15,37 @@ app:
     ENABLE_DB:               *enable_db
 db:
   enabled: *enable_db
+  replicaCount: 1
+  image:
+    repository: mongo
+    pullPolicy: IfNotPresent
+    tag: 4.4.6
+  #command: ["mongod", "-f", "/etc/mongo/mongod.conf"]
+  service:
+    ports:
+      - servicePort: 27017
+        targetContainerPortName: mongo
+  containerPorts:
+    - name: mongo
+      port: 27017
+  containerProbe:
+    enabled: true
+    type: tcp
+    port: mongo
+    probes:
+      livenessProbe:
+        failureThreshold: 5
+        periodSeconds: 15
+      readinessProbe:
+        failureThreshold: 2
+        periodSeconds: 15
+  useStatefulSet: true
+  persistence:
+    statefulset:
+      persistentVolumeClaimRetentionPolicy:
+        whenDeleted: *sts_claim_policy
+  volumeClaimMounts:
+    - mountPath: /data/db
+      subPath: db
+  secretStringData:
+    MONGO_INITDB_DATABASE: zootr
