@@ -27,7 +27,11 @@ const medal_zones = ["????", "FREE", "DEKU", "DODO", "JABU", "FRST", "FIRE", "WA
 const miscHints = ["", "LW: Skull Mask", "Market: Chest", "Kak: Cuccos", "GY: Sun", "GY: Flame", "DMT: Biggoron", "GC: Hammer",
     "GC: Dance", "GC: Pottery", "ZR: Final Frog", "ZF: Under Ice", "ZD: Unfreeze", "L Hylia: Sun", "GV: Hammer", "FT: Pierre",
     "FT: Top Flare", "WT: Boulder", "WT: River", "Spirit: ColoLH", "Spirit: ColoRH", "Shadow: Invis Maze", "GTG: Sunken", "GTG: Final Thieves", "BotW: DeadHand"]
-const miscItems = ["", "Dead", "SM Key", "Boss Key", ...itemNames]
+const miscItems = ["", "Dead", "SM Key", "Boss Key", "D Defense", "Wind", ...itemNames]
+
+let items = itemNames.map((itemName) => ({name: itemName, clicks: 0, locations: []}) )
+let medals = medallions.map((medalName) => ({name: medalName, clicks: 0, locations: []}) )
+let songs = songNames.map((songName) => ({name: songName, clicks: 0, locations: []}) )
 
 class Home extends React.Component {
 
@@ -36,9 +40,9 @@ class Home extends React.Component {
         this.state = {
             useSimple: false,
             keyDisplay: false,
-            songs: [],
-            items: [],
-            medals: [],
+            songs: songs,
+            items: items,
+            medals: medals,
             woth: [],
             barren: [],
             hints: [],
@@ -67,8 +71,8 @@ class Home extends React.Component {
         this.highlightSelectOnChange = this.highlightSelectOnChange.bind(this)
         this.changeImage = this.changeImage.bind(this)
         this.saveImgClick = this.saveImgClick.bind(this)
-        //TODO: Next iteration
-        //this.saveDropdownClick = this.saveDropdownClick.bind(this)
+        this.saveDropdownClick = this.saveDropdownClick.bind(this)
+        this.saveHintClick = this.saveHintClick.bind(this)
         this.sendSaveState = this.sendSaveState.bind(this)
         this.getSaveState = this.getSaveState.bind(this)
         this.setSaveState = this.setSaveState.bind(this)
@@ -78,6 +82,7 @@ class Home extends React.Component {
         this.login = this.login.bind(this)
         this.logout = this.logout.bind(this)
         this.toggleSimpleDisplay = this.toggleSimpleDisplay.bind(this)
+        this.saveZoneSelectOnChange = this.saveZoneSelectOnChange.bind(this)
     }
 
     componentDidMount() {
@@ -134,12 +139,13 @@ class Home extends React.Component {
                     authEmail: "",
                     authKey: "",
                     secretKey: "",
-                    songs: [],
-                    items: [],
-                    medals: [],
+                    songs: songs,
+                    items: items,
+                    medals: medals,
                     woth: [],
                     barren: [],
                     hints: [],
+                    hint: ["", ""],
                 })
             }
             else {
@@ -151,44 +157,49 @@ class Home extends React.Component {
 
     saveImgClick(imageArrName, imageName, imageOpacity) {
         let uniqueImageName = imageName.replace(/\d/, "")
-        let filteredImageList = this.state[imageArrName].filter((image) => !image.match(uniqueImageName))
-        imageOpacity > 0.7 && filteredImageList.push(imageName)
-        // TODO: Can we only send the array we need instead of everything
-        // Yes but need to make sure we're only setting state on keys in the object returned
+        let newList = this.state[imageArrName].map(({name, clicks, locations}) => {
+            name == uniqueImageName && (clicks = imageOpacity > 0.7 ? clicks+1 : 0)
+            return {name, clicks, locations}
+        })
         let json = {
             secretKey: this.state.secretKey,
             doc: {
                 id: this.state.id ? this.state.id : "",
                 user: this.state.authEmail,
-                useSimple: this.state.useSimple,
-                songs: imageArrName === "songs" ? filteredImageList : this.state.songs,
-                items: imageArrName === "items" ? filteredImageList : this.state.items,
-                medals: imageArrName === "medals" ? filteredImageList : this.state.medals,
-                woth: this.state.woth,      //TODO: Separate save on update
-                barren: this.state.barren,  //TODO: Separate save on update
-                hints: this.state.hints,    //TODO: Separate save on update
+                [imageArrName]: newList
             }
         }
-        this.sendSaveState(json)
+        this.setState({ [imageArrName]: newList }, ()=>this.sendSaveState(json))
     }
 
-    //TODO: Next iteration
-    //saveDropdownClick() {
-    //    let json = {
-    //        secretKey: this.state.secretKey,
-    //        doc: {
-    //            id: this.state.id ? this.state.id : "",
-    //            user: this.state.authEmail,
-    //            songs: this.state.songs,
-    //            items: this.state.items,
-    //            medals: this.state.medals,
-    //            woth: this.state.woth,
-    //            barren: this.state.barren,
-    //            hints: this.state.hints,
-    //        }
-    //    }
-    //    this.sendSaveState(json)
-    //}
+    saveDropdownClick(stateArrName, dropdownName, location, ind) {
+        let newList = this.state[stateArrName].map(({name, clicks, locations}) => {
+            name == dropdownName && (locations[ind] = location)
+            return {name, clicks, locations}
+        })
+        let json = {
+            secretKey: this.state.secretKey,
+            doc: {
+                id: this.state.id ? this.state.id : "",
+                user: this.state.authEmail,
+                [stateArrName]: newList
+            }
+        }
+        this.setState({ [stateArrName]: newList }, ()=>this.sendSaveState(json))
+    }
+
+    saveHintClick(stateArrName, newList) {
+        let json = {
+            secretKey: this.state.secretKey,
+            doc: {
+                id: this.state.id ? this.state.id : "",
+                user: this.state.authEmail,
+                [stateArrName]: newList
+            }
+        }
+        let newHintState = stateArrName !== "hints" ? this.state.hint : ["", ""]
+        this.setState({ [stateArrName]: newList, hint: newHintState }, ()=>this.sendSaveState(json))
+    }
 
     sendSaveState(json) {
         if(!this.state.authEmail) {
@@ -220,37 +231,34 @@ class Home extends React.Component {
     }
 
     setSaveState(doc) {
-        //TODO: Reset items not in state - clicked items prior to login/logout
-        //TODO: Only set state on items in the doc - make sure to include empty values
-        //  but omit keys that do not exist
-        this.setState({
-            id: doc._id,
-            user: doc.user,
-            useSimple: doc.useSimple,
-            songs: doc.songs,
-            items: doc.items,
-            medals: doc.medals,
-            woth: doc.woth,
-            barren: doc.barren,
-            hints: doc.hints,
-        })
+        let newStateObj = {}
+        Object.hasOwn(doc, '_id') && (newStateObj.id = doc._id)
+        Object.hasOwn(doc, 'user') && (newStateObj.user = doc.user)
+        Object.hasOwn(doc, 'useSimple') && (newStateObj.useSimple = doc.useSimple)
+        Object.hasOwn(doc, 'songs') && (newStateObj.songs = doc.songs)
+        Object.hasOwn(doc, 'items') && (newStateObj.items = doc.items)
+        Object.hasOwn(doc, 'medals') && (newStateObj.medals = doc.medals)
+        Object.hasOwn(doc, 'woth') && (newStateObj.woth = doc.woth)
+        Object.hasOwn(doc, 'barren') && (newStateObj.barren = doc.barren)
+        Object.hasOwn(doc, 'hints') && (newStateObj.hints = doc.hints)
+        this.setState(newStateObj, this.highlightSelectOnChange)
     }
 
-    createZoneDropdown(stateArr, options) {
+    createZoneDropdown(hintArrName, options) {
         let optionsArr = options.map((optionItem, ind2) => {
             return ( <option key={ind2} value={optionItem}>{optionItem}</option> );
         })
         let dropdown = (
             <div key={"dropdown"} className={"selectBox"}>
-                <select className={"zone"} value={""} onChange={(e)=>this.addItem(e, stateArr)}>{optionsArr}</select>
+                <select className={"zone"} value={""} onChange={(e)=>this.addItem(e, hintArrName)}>{optionsArr}</select>
             </div>
         )
-        let list = this.state[stateArr].map((zone, i) => {
+        let list = this.state[hintArrName].map((zone, i) => {
             return (
                 <div key={i} className={"selectBox"}>
                     <select className={"zone"} value={zone} disabled>{optionsArr}</select>
                     <div>
-                        <button className={"delete"} onClick={(e)=>this.removeItem(e, i, stateArr)}>X</button>
+                        <button className={"delete"} onClick={(e)=>this.removeItem(e, i, hintArrName)}>X</button>
                     </div>
                 </div>
             )
@@ -259,7 +267,7 @@ class Home extends React.Component {
         return list;
     }
 
-    createHintDropdown(stateArr, miscHints, miscItems) {
+    createHintDropdown(hintArrName, miscHints, miscItems) {
         let miscHintsOpts = miscHints.map((optionItem, ind) => {
             return ( <option key={ind} value={optionItem}>{optionItem}</option> );
         })
@@ -267,20 +275,20 @@ class Home extends React.Component {
             return ( <option key={ind} value={optionItem}>{optionItem}</option> );
         })
         let dropdown = (
-            <div key={"dropdown"} >
+            <div key={"dropdown"} style={{display: "flex"}}>
                 <select value={this.state.hint[0]} onChange={(e)=>this.updateHint(e, 0)}>{miscHintsOpts}</select>
                 <select value={this.state.hint[1]} onChange={(e)=>this.updateHint(e, 1)}>{miscItemsOpts}</select>
-                <button onClick={(e)=>this.addHint(e, stateArr)}>Add</button>
+                <button onClick={()=>this.addHint(hintArrName)}>Add</button>
             </div>
         )
 
-        let list = this.state[stateArr].map((hint, i) => {
+        let list = this.state[hintArrName].map((hint, i) => {
             return (
                 <div key={i} style={{display: "flex"}}>
                     <select style={{background: "white"}} value={hint[0]} disabled>{miscHintsOpts}</select>
                     <select style={{background: "white"}} value={hint[1]} disabled>{miscItemsOpts}</select>
                     <div>
-                        <button onClick={(e)=>this.removeItem(e, i, stateArr)}>X</button>
+                        <button onClick={(e)=>this.removeItem(e, i, hintArrName)}>X</button>
                     </div>
                 </div>
             )
@@ -297,24 +305,29 @@ class Home extends React.Component {
         this.setState({hint: updatedHint})
     }
 
-    addHint(e, stateArr) {
+    addHint(hintArrName) {
         let hint = this.state.hint
-        let currentArr = this.state[stateArr].slice();
-        currentArr.push(hint)
-        this.setState({[stateArr]: currentArr, hint: ["", ""]})
+        let newArr = this.state[hintArrName].slice();
+        newArr.push(hint)
+        this.saveHintClick(hintArrName, newArr)
     }
 
-    addItem(e, stateArr) {
+    addItem(e, hintArrName) {
         let val = e.target.value
-        let currentArr = this.state[stateArr].slice();
-        currentArr.push(val)
-        this.setState({[stateArr]: currentArr}, this.highlightSelectOnChange)
+        let newArr = this.state[hintArrName].slice();
+        newArr.push(val)
+        this.saveHintClick(hintArrName, newArr)
     }
 
-    removeItem(e, i, stateArr) {
-        let currentArr = this.state[stateArr].slice();
-        currentArr.splice(i, 1)
-        this.setState({[stateArr]: currentArr}, this.highlightSelectOnChange)
+    removeItem(e, ind, hintArrName) {
+        let newArr = this.state[hintArrName].slice();
+        newArr.splice(ind, 1)
+        this.saveHintClick(hintArrName, newArr)
+    }
+
+    saveZoneSelectOnChange(stateArrName, objName, e, ind) {
+        let location = e.target.value
+        this.saveDropdownClick(stateArrName, objName, location, ind)
     }
 
     highlightSelectOnChange() {
@@ -376,16 +389,14 @@ class Home extends React.Component {
     }
 
     createColumn(colType, list, options, multi_options = []) {
-        //TODO: simple+ styling
-        //let s = this.state.useSimple ? "simple" : ""
-        let s = this.state.useSimple ? "" : ""
-        let styles = {
-            songs: {row: `${s}songRow`, name: `${s}songLocation`, options: `${s}songName`},
-            items: {row: `${s}itemRow`, name: `${s}itemName`, options: `${s}zone`},
-            medals: {row: `${s}medalRow`, name: `${s}medalName`, options: `${s}medalZone`},
+        let sc = this.state.useSimple ? "simple" : ""
+        let classNames = {
+            songs: {row: `songRow ${sc}`, name: `songLocation ${sc}`, options: `songName ${sc}`},
+            items: {row: `itemRow ${sc}`, name: `itemName ${sc}`, options: `zone ${sc}`},
+            medals: {row: `medalRow ${sc}`, name: `medalName ${sc}`, options: `medalZone ${sc}`},
         }
 
-        let rows = list.map((listItem, ind) => {
+        let rows = list.map(({name, clicks, locations}, ind) => {
             let optionsArr = options.map((optionItem, ind2) => {
                 return ( <option key={ind2} value={optionItem}>{optionItem}</option> );
             })
@@ -393,33 +404,38 @@ class Home extends React.Component {
             let selection = this.state.useSimple === true ? null : (
                 <div className={"selectionContainer"}>
                     <select ref={colType === "items" && this.assignSelectRef.bind(this, ind)}
-                    className={ styles[colType].options }
-                    onChange={this.highlightSelectOnChange}>{optionsArr}
+                    className={ classNames[colType].options }
+                    value={locations[0] || ""}
+                    onChange={(e)=>this.saveZoneSelectOnChange(colType, name, e, 0)}>
+                        {optionsArr}
                     </select>
                 </div>
             )
 
             this.state.useSimple == true ? null : multi_options.forEach((multi_option) => {
-                if(multi_option.name === listItem) {
+                if(multi_option.name === name) {
                     selection = [...Array(multi_option.num)].map((e, i) => {
                         return (
                             <div key={i} className={"selectionContainer"}>
                                 <select ref={colType === "items" && i === 0 && this.assignSelectRef.bind(this, ind)}
-                                className={ styles[colType].options }
-                                onChange={this.highlightSelectOnChange}>{optionsArr}</select>
+                                className={ classNames[colType].options }
+                                value={locations[i] || ""}
+                                onChange={(e)=>this.saveZoneSelectOnChange(colType, name, e, i)}>
+                                    {optionsArr}
+                                </select>
                             </div>)
                     })
                 }
             })
-            let foundItem = this.state[colType].find((img)=>img.replace(/\d/, "")===listItem)
-            let itemTitle = foundItem ? foundItem : listItem
+            let title = `${name}${clicks > 1 ? clicks : ""}`
+            let opacity = `${clicks > 0 ? 100 : 40}%`
 
             return (
-                <div className={ `${styles[colType].row}` } key={ind} ref={colType == "items" && this.assignDivRef.bind(this, ind)}>
-                    <span className={ styles[colType].name }>
-                        <img style={{opacity: `${foundItem?100:40}%`}} title={itemTitle}
+                <div className={ `${classNames[colType].row}` } key={ind} ref={colType == "items" && this.assignDivRef.bind(this, ind)}>
+                    <span className={ classNames[colType].name }>
+                        <img style={{opacity: opacity}} title={title}
                         onClick={(e)=>this.changeImage(e, colType)}
-                        src={`data:image/png;base64,${sprites[itemTitle+".txt"]}`} />
+                        src={`data:image/png;base64,${sprites[title+".txt"]}`} />
                     </span>
                     {selection}
                 </div>
@@ -435,6 +451,7 @@ class Home extends React.Component {
     toggleSimpleDisplay() {
         let s = this.state.useSimple
         this.setState({useSimple: !s}, () => {
+            this.highlightSelectOnChange()
             let json = {
                 secretKey: this.state.secretKey,
                 doc: { id: this.state.id ? this.state.id : "", useSimple: this.state.useSimple}
@@ -452,10 +469,9 @@ class Home extends React.Component {
     }
 
     render() {
-
-        let songRows = this.createColumn("songs", songNames, songLocations);
-        let itemRows = this.createColumn("items", itemNames, zones, multi_options);
-        let medalRows = this.createColumn("medals", medallions, medal_zones);
+        let songRows = this.createColumn("songs", this.state.songs, songLocations);
+        let itemRows = this.createColumn("items", this.state.items, zones, multi_options);
+        let medalRows = this.createColumn("medals", this.state.medals, medal_zones);
 
         let loginEmailInput = this.state.authEmail ? null : <input type={"text"}
                         style={{position: "relative", left: "-12px"}}
@@ -476,6 +492,7 @@ class Home extends React.Component {
             : <button onClick={this.login}>Login</button>
 
         let simpleDisplayText = this.state.useSimple ? "Compact" : "Normal"
+        let sc = this.state.useSimple ? " simple" : ""
 
         return (
             <div id="component-home">
@@ -485,9 +502,12 @@ class Home extends React.Component {
                     {loginKeyInput}
                     {authKeyDisplay}
                     {loginButton}
-                    <div>Item Display: <b>{simpleDisplayText}</b> <button onClick={this.toggleSimpleDisplay}>Toggle</button></div>
+                    <div>
+                        Item Display: <b>{simpleDisplayText} </b> 
+                        <button onClick={this.toggleSimpleDisplay}>Toggle</button>
+                    </div>
                 </div>
-                <div style={{display: "flex"}}>
+                <div style={{display: "flex", height: "30em"}}>
                     <div>
                         <h3>Songs</h3>
                         <div id="songs" className={"col"}>
@@ -496,39 +516,36 @@ class Home extends React.Component {
                     </div>
                     <div>
                         <h3>Items</h3>
-                        <div id="items" className={"col"}>
+                        <div id="items" className={`col ${sc}`}>
                             {itemRows}
                         </div>
                     </div>
-                </div>
-
-                <div style={{display: "flex", margin: "10px 10px"}}>
-                    {medalRows}
-                </div>
-
-                <div style={{display: "flex"}}>
-                    <div className={"zoneLists"}>
-                        <h4>Way of the Hero</h4>
-                        <div>
-                            {this.createZoneDropdown("woth", zones)}
+                    <div style={{display: "flex", flexDirection: "column"}}>
+                        <div style={{display: "flex"}}>
+                            <div className={"zoneLists"}>
+                                <h3>Way of the Hero</h3>
+                                <div>
+                                    {this.createZoneDropdown("woth", zones)}
+                                </div>
+                            </div>
+                            <div className={"zoneLists"}>
+                                <h3>Barren</h3>
+                                <div>
+                                    {this.createZoneDropdown("barren", zones)}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div className={"zoneLists"}>
-                        <h4>Barren</h4>
                         <div>
-                            {this.createZoneDropdown("barren", zones)}
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3>Misc Hints</h3>
-                    <div style={{display: "flex", justifyContent: "center"}}>
-                        <div>
+                            <h4>Misc Hints</h4>
                             {this.createHintDropdown("hints", miscHints, miscItems)}
+                            <div style={{display: "flex"}}>
+                                <textarea style={{margin: "10px 0"}} rows="5" cols="35"></textarea>
+                            </div>
                         </div>
-                        <textarea style={{margin: "0 10px"}} rows="5" cols="40"></textarea>
                     </div>
+                </div>
+                <div id="medals" className={sc}>
+                    {medalRows}
                 </div>
             </div>
         );

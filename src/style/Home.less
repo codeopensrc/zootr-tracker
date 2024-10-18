@@ -2,50 +2,41 @@
     display: flex;
     flex-direction: column;
 
-    > div { margin: 0 5px; text-align: center; }
+    > div { margin: 0 1px; text-align: center; }
 
     #songs, #items {
         height: 27em;
     }
     #items {
         flex-wrap: wrap;
-
-        .woth {
-            background: #6e9b6b;
-        }
-        .itemRow {
-            margin: 0 8px;
-            padding: 3px;
-
-            .zone {
-                font-size: 12px;
-            }
-        }
+        width: 29em;
+        &.simple { width: 6em; }
+        .woth { background: #6e9b6b; }
     }
 
-    .medalRow {
-        margin: 0 2px;
-
-        .medalName {}
-        .medalZone {
-            font-size: 12px;
+    #medals {
+        display: flex;
+        width: 38em;
+        margin: 10px 0;
+        &.simple { width: 8em; flex-wrap: wrap;}
+        .medalRow {
+            margin: 0 0.5px;
+            &.simple { margin: 0 5px; }
+            .medalName {}
+            .medalZone { font-size: 12px; }
         }
     }
 
     .zoneLists {
-        width: 46%;
         display: flex;
         flex-direction: column;
         margin: 3px auto;
-
         > h4 { margin: 10px; }
         > div {
             display: flex;
             flex-wrap: wrap;
-            height: 10em;
             flex-direction: column;
             align-content: flex-start;
-
             .selectBox {
                 margin: 2px;
                 display: flex;
@@ -58,14 +49,12 @@
         display: flex;
         flex-direction: column;
         font-size: 16px;
-        margin: 0 12px;
-
+        margin: 0 2px;
         .songRow, .itemRow {
             display: flex;
             margin: 1px 0;
             padding-bottom: 1px;
             align-items: center;
-
             .selectionContainer {
                 display: flex;
                 margin-right: 5px;
@@ -75,10 +64,15 @@
                 align-self: center;
             }
             .songLocation, .itemName {
-                width: 2.8em;
+                width: 2.4em;
                 img { width: 32px; height: 32px; }
             }
             .songName { }
+        }
+        .itemRow {
+            margin: 0;
+            padding: 3px;
+            .zone { font-size: 12px; }
         }
     }
 
